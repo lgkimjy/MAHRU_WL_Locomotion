@@ -33,6 +33,7 @@
 
 # Directories
 /model/*
+/libraries/*
 /build/*
 .vscode/*
 /data/*

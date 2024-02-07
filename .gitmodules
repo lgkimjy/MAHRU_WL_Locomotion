@@ -1,3 +1,6 @@
 [submodule "include/ARBMLlib"]
 	path = include/ARBMLlib
 	url = https://github.com/HumanoidRoboticsLab/ARBMLlib.git
+[submodule "model"]
+	path = model
+	url = https://github.com/HumanoidRoboticsLab/model.git
