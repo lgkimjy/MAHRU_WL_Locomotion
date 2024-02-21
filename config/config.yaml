@@ -1,0 +1,27 @@
+qcmd_gain:
+  kp: [ 500, 
+        500, 500, 500, 500, 
+        500, 500, 500, 500, 
+        500, 500, 500, 500, 500, 
+        500, 500, 500, 500, 500 ]
+  kd: [ 10,
+        10, 10, 10, 10,
+        10, 10, 10, 10,
+        10, 10, 10, 10, 10,
+        10, 10, 10, 10, 10 ]
+
+joint_level_gain:
+  kp: [ 1500, # torso yaw
+        1500, 1500, 1500, 1500, # right shoulder pitch, roll, elbow yaw, pitch
+        1500, 1500, 1500, 1500, # left shoulder pitch, roll, elbow yaw, pitch
+        2000, 2000, 1500, 1500, 1500,  # right hip roll, pitch, knee pitch, toe, wheel
+        2000, 2000, 1500, 1500, 1500 ] # left hip roll, pitch, knee pitch, toe, wheel
+  kd: [ 100,
+        100, 100, 100, 100,
+        100, 100, 100, 100,
+        100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100 ]
+
+cartesian_track_gain:   # for swing foot tracking
+  kp: [ 100, 100, 100 ] # x, y, z
+  kd: [ 1, 1, 1 ]
