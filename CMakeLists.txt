@@ -6,7 +6,7 @@ set(MSVC_INCREMENTAL_DEFAULT ON)
 
 project(
   template_arbml
-  VERSION 2.3.7
+  VERSION 3.1.3
   DESCRIPTION "MuJoCo Template Repository using ARBML libaray"
 )
 
@@ -27,6 +27,7 @@ option(MUJOCO_BUILD_SIMULATE "Build simulate library for MuJoCo" ON)
 option(MUJOCO_BUILD_TESTS "Build tests for MuJoCo" OFF)
 option(MUJOCO_TEST_PYTHON_UTIL "Build and test utility libraries for Python bindings" ON)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libraries/mujoco)                             # Add subdirectory
+add_subdirectory(${PROJECT_SOURCE_DIR}/libraries/yaml-cpp)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/libraries/mujoco/sample/cmake") # CMake Path append
 #################################
 # Open Libraries ENDS here
@@ -66,12 +67,24 @@ if(MUJOCO_HARDEN)
     endif()
   endif()
 endif()
+add_definitions(-DCMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 
 
 #################################
 # Custom Sources STARTS from here
 #################################
 find_package(Eigen3 REQUIRED)
+find_package(eigen-quadprog REQUIRED)
+find_package(pinocchio REQUIRED)
+
+include(FetchContent)
+FetchContent_Declare(csvpp
+GIT_REPOSITORY https://github.com/andreacasalino/csvcpp
+GIT_TAG        main
+)
+set(BUILD_CSV_READER_SAMPLES OFF)
+set(BUILD_CSV_READER_TESTS OFF)
+FetchContent_MakeAvailable(csvpp)
 
 include_directories(
     include
@@ -85,12 +98,38 @@ set(ARBML_SRC
   include/ARBMLlib/ARBML.cpp
   include/ARBMLlib/RigidBody.cpp
 )
+set(CONTACT_SRC 
+  include/Contact/ContactWrenchCone.cpp
+  include/Contact/FrictionCone.cpp
+)
+set(WPG_SRC 
+  # include/WalkingPatternGeneration/WalkingPatternGeneration.cpp
+  # include/WalkingPatternGeneration/reactive_stepper.cpp
+)
+set(TRAJ_SRC 
+  # include/Trajectory/Trajectory.cpp
+  # include/Trajectory/polynomial_end_effector_trajectory.cpp
+)
+set(STEPPER_SRC 
+  include/ReactiveStepper/polynomial_end_effector_trajectory.cpp
+  include/ReactiveStepper/reactive_stepper.cpp
+)
+set(LOCOMOTION_SRC
+  include/LocomotionController/ReactionForce.cpp
+  include/LocomotionController/KinWBC.cpp
+  include/LocomotionController/DynWBC.cpp
+)
 
 add_executable(template 
   src/main.cpp 
   src/Robot_Control.cpp 
   ${SIMULATE_RESOURCE_FILES} 
   ${ARBML_SRC}
+  ${CONTACT_SRC}
+  # ${WPG_SRC}
+  # ${TRAJ_SRC}
+  ${STEPPER_SRC}
+  ${LOCOMOTION_SRC}
 )
 target_include_directories(template PUBLIC
   ${CMAKE_SOURCE_DIR}/include
@@ -101,6 +140,10 @@ target_link_libraries(template
   glfw
   Threads::Threads
   lodepng
+  eigen-quadprog::eigen-quadprog
+  csvpp
+  yaml-cpp
+  pinocchio::pinocchio
 )
 target_compile_options(template PUBLIC ${MUJOCO_SIMULATE_COMPILE_OPTIONS})
 #################################
